@@ -158,7 +158,7 @@ client.on("message",msg => {
 						fields: [
 							{
 								name: "Basic commands",
-								value: "**" + prefix + "ping** | Pings discord.\n**" + prefix + "invite** | Generates an invite link which gives you coins when used.\n**" + prefix + "version** | Displays bot version."
+								value: "**" + prefix + "ping** | Pings discord.\n**" + prefix + "invite** | Generates an invite link which gives you coins when used.\n**" + prefix + "version** | Displays bot version.\n**" + prefix + "source** | Programmed perfection :ok_hand:"
 							},
 							{
 								name: "Fun commands",
@@ -406,7 +406,9 @@ client.on("message",msg => {
 					},1000);
 				}
 			} else if(cmd == prefix + "version"){
-				msg.channel.send("v0.5.7 Alpha (WIP)");
+				msg.channel.send("v0.5.8 Alpha (WIP)");
+			} else if(cmd == prefix + "source"){
+				msg.channel.send("Programmed perfection :ok_hand: https://github.com/DrProgrammedChild/conk-bot");
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
