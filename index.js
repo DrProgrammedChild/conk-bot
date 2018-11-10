@@ -4,11 +4,13 @@
 var discord = require("discord.js");
 var request = require("request");
 var express = require("express");
+var booru = require("booru");
 var bodyParser = require("body-parser");
 var dbjson = require("./database.json");
 var fs = require("fs");
 var ytdl = require("ytdl-core");
 var client = new discord.Client();
+var rule34 = new booru("rule34");
 var app = express();
 var prefix = process.env.prefix;
 var token = process.env.token;
@@ -62,6 +64,24 @@ function goCommitDie(){
 				image: post.data.url
 			});
 		});
+	});
+}
+
+function getHentai(tags){
+	return new Promise((resolve,reject) => {
+		rule34.search(tags,{limit: 10})
+			.then(imgs => {
+				if(imgs[0]){
+					let tab = [];
+					for(let i = 0; i < imgs.length; i++){
+						tab.push(imgs[i].common.file_url);
+					}
+					resolve(tab);
+				} else{
+					resolve("Nothing found");
+				}
+			})
+			.catch(console.log);
 	});
 }
 
@@ -148,7 +168,7 @@ client.on("message",msg => {
 							},
 							{
 								name: "Fun commands",
-								value: "**" + prefix + "meme <deepfried>** | Shows a MEME!\n**" + prefix + "inspirationalquote** | Shows an inspirational quote.\n**" + prefix + "gocommitdie** | Just go commit neck rope or some shit."
+								value: "**" + prefix + "meme <deepfried>** | Shows a MEME!\n**" + prefix + "inspirationalquote** | Shows an inspirational quote.\n**" + prefix + "gocommitdie** | Just go commit neck rope or some shit.\n**" + prefix + "hentai** | Gives you hentai (use this in #nsfw-bot)"
 							},
 							{
 								name: "Currency commands",
@@ -395,11 +415,22 @@ client.on("message",msg => {
 				msg.channel.send("v0.5.9 Alpha (WIP)");
 			} else if(cmd == prefix + "source"){
 				msg.channel.send("Programmed perfection :ok_hand: https://github.com/DrProgrammedChild/conk-bot");
-			} else if(cmd == prefix + "dboverwrite"){
-				if(isAdmin(msg.member)){
-					fs.writeFile("./database.json",args.join(" "),console.log);
-					dbjson = require("./database.json");
-				}	
+			} else if(cmd == prefix + "hentai"){
+				getHentai(args)
+					.then(imgs => {
+						if(imgs != "Nothing found"){
+							imgs.forEach(img => {
+								msg.channel.send({
+									files: [
+										img
+									]
+								});
+							});
+						} else{
+							msg.channel.send(imgs);
+						}
+					})
+					.catch(console.log);
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
