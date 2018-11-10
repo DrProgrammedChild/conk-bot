@@ -1,7 +1,7 @@
 {
   "name": "conk-bot",
   "version": "1.0.0",
-  "description": "fuck you, god is dead and we killed him",
+  "description": "idfk anymore",
   "main": "index.js",
   "scripts": {
     "start": "node index"
