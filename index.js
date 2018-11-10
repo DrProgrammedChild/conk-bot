@@ -399,7 +399,7 @@ client.on("message",msg => {
 				}	
 			} else if(cmd == "dbfull"){
 				if(isAdmin(msg.member)){
-					msg.member.send(JSON.stringify(dbjson));
+					msg.author.send(JSON.stringify(dbjson));
 				}
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
