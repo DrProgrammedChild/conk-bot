@@ -1,15 +1,17 @@
 {
   "name": "conk-bot",
   "version": "1.0.0",
-  "description": "idfk anymore",
+  "description": "fuck you, god is dead and we killed him",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "_programmeKid",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "discord.js": "^11.4.2",
+    "express": "^4.16.4",
     "ffmpeg-binaries": "^4.0.0",
     "opusscript": "0.0.6",
     "request": "^2.88.0",
