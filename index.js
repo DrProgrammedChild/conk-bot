@@ -397,10 +397,6 @@ client.on("message",msg => {
 					fs.writeFile("./database.json",args.join(" "),console.log);
 					dbjson = require("./database.json");
 				}	
-			} else if(cmd == "dbfull"){
-				if(isAdmin(msg.member)){
-					msg.author.send(JSON.stringify(dbjson));
-				}
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
