@@ -107,23 +107,6 @@ function takeCoins(user,amount){
 client.on("ready",() => {
 	console.log("Client ready!");
 	client.user.setActivity("with my dick, fuck you.");
-	let selected = 0;
-	let statuses = [
-		["with my dick, fuck you","PLAYING"],
-		["your microphone","LISTENING"],
-		["you out your window","WATCHING"],
-		["hentai","WATCHING"]
-	];
-	setInterval(() => {
-		selected += 1;
-		let status; 
-		if(selected < statuses.length){
-			status = statuses[selected];
-		} else{
-			selected = 0;
-			status = statuses[selected];
-		}
-	},1000*60*5);
 });
 
 client.on("guildMemberAdd",member => {
@@ -406,9 +389,18 @@ client.on("message",msg => {
 					},1000);
 				}
 			} else if(cmd == prefix + "version"){
-				msg.channel.send("v0.5.8 Alpha (WIP)");
+				msg.channel.send("v0.5.9 Alpha (WIP)");
 			} else if(cmd == prefix + "source"){
 				msg.channel.send("Programmed perfection :ok_hand: https://github.com/DrProgrammedChild/conk-bot");
+			} else if(cmd == prefix + "dboverwrite"){
+				if(isAdmin(msg.member)){
+					fs.writeFile("./database.json",args.join(" "),console.log);
+					dbjson = require("./database.json");
+				}	
+			} else if(cmd == "dbfull"){
+				if(isAdmin(msg.member)){
+					msg.member.send(JSON.stringify(dbjson));
+				}
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
