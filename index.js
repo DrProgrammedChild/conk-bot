@@ -161,7 +161,7 @@ client.on("message",msg => {
 						fields: [
 							{
 								name: "Basic commands",
-								value: "**" + prefix + "ping** | Pings discord.\n**" + prefix + "invite** | Generates an invite link which gives you coins when used.\n**" + prefix + "version** | Displays bot version.\n**" + prefix + "source** | Programmed perfection :ok_hand:"
+								value: "**" + prefix + "ping** | Pings discord.\n**" + prefix + "invite** | Generates an invite link which gives you coins when used.\n**" + prefix + "version** | Displays bot version.\n**" + prefix + "source** | Programmed perfection :ok_hand:\n**" + prefix + "website** | For our website"
 							},
 							{
 								name: "Fun commands",
