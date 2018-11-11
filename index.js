@@ -168,7 +168,7 @@ client.on("message",msg => {
 							},
 							{
 								name: "Fun commands",
-								value: "**" + prefix + "meme <deepfried>** | Shows a MEME!\n**" + prefix + "inspirationalquote** | Shows an inspirational quote.\n**" + prefix + "gocommitdie** | Just go commit neck rope or some shit.\n**" + prefix + "hentai** | Gives you hentai (use this in #nsfw-bot)"
+								value: "**" + prefix + "meme <deepfried>** | Shows a MEME!\n**" + prefix + "inspirationalquote** | Shows an inspirational quote.\n**" + prefix + "gocommitdie** | Just go commit neck rope or some shit.\n**" + prefix + "hentai <tags>** | Gives you hentai (use this in #nsfw-bot)"
 							},
 							{
 								name: "Currency commands",
