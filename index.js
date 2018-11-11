@@ -411,7 +411,7 @@ client.on("message",msg => {
 			} else if(cmd == prefix + "version"){
 				msg.channel.send("v0.5.9 Alpha (WIP)");
 			} else if(cmd == prefix + "source"){
-				msg.channel.send("Programmed perfection :ok_hand: https://github.com/DrProgrammedChild/conk-bot");
+				msg.channel.send("Programmed perfection :ok_hand:\nhttps://github.com/DrProgrammedChild/conk-bot");
 			} else if(cmd == prefix + "hentai"){
 				getHentai(args)
 					.then(imgs => {
@@ -428,6 +428,8 @@ client.on("message",msg => {
 						}
 					})
 					.catch(console.log);
+			} else if(cmd == prefix + "website"){
+				msg.channel.send("Go here for our bullshit\nhttps://conk-bot.herokuapp.com/");
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
