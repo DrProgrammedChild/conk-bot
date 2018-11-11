@@ -132,6 +132,7 @@ client.on("ready",() => {
 client.on("guildMemberAdd",member => {
 	let channel = member.guild.channels.find("name","general");
 	channel.send("Welcome, **" + member.user.username + "**. Enjoy the squeaking of all the squeakers in this server.");
+	member.addRole("502610628964384771");
 });
 
 client.on("guildMemberRemove",member => {
