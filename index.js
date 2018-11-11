@@ -102,6 +102,7 @@ function DBGetUser(user){
 
 function DBSetUser(user,newentry){
 	dbjson["id-" + user.id] = newentry;
+	fs.writeFile("./database.json",JSON.stringify(dbjson),console.log);
 }
 
 function getCoins(user){
@@ -130,6 +131,7 @@ client.on("ready",() => {
 });
 
 client.on("guildMemberAdd",member => {
+	DBGetUser(member);
 	let channel = member.guild.channels.find("name","general");
 	channel.send("Welcome, **" + member.user.username + "**. Enjoy the squeaking of all the squeakers in this server.");
 	member.addRole("502610628964384771");
@@ -152,7 +154,7 @@ client.on("message",msg => {
 			if(cmd == prefix + "ping"){
 				msg.channel.send("Pong!")
 					.then(newmsg => {
-						newmsg.edit("Pong! `" + (Date.now()-newmsg.createdTimestamp) + "` ms.");
+						newmsg.edit("Pong! **" + (Date.now()-newmsg.createdTimestamp) + " ms**");
 					})
 					.catch(console.log);
 			} else if(cmd == prefix + "help"){
@@ -431,6 +433,40 @@ client.on("message",msg => {
 					.catch(console.log);
 			} else if(cmd == prefix + "website"){
 				msg.channel.send("Go here for our bullshit\nhttps://conk-bot.herokuapp.com/");
+			} else if(cmd == prefix + "addcoins"){
+				let member = msg.mentions.members.first();
+				if(member){
+					if(args[1]){
+						let coins = parseInt(args[1]);
+						if(coins){
+							addCoins(member,coins);
+							msg.channel.send("Gave coins successfully!");
+						} else{
+							msg.channel.send(":no_entry_sign: Error: Please enter valid coin amount.");
+						}
+					} else{
+						msg.channel.send(":no_entry_sign: Error: Please enter valid coin amount.");
+					}
+				} else{
+					msg.channel.send(":no_entry_sign: Error: Please provide a user to give coins.");
+				}
+			} else if(cmd == prefix + "takecoins"){
+				let member = msg.mentions.members.first();
+				if(member){
+					if(args[1]){
+						let coins = parseInt(args[1]);
+						if(coins){
+							takeCoins(member,coins);
+							msg.channel.send("Took coins successfully!");
+						} else{
+							msg.channel.send(":no_entry_sign: Error: Please enter valid coin amount.");
+						}
+					} else{
+						msg.channel.send(":no_entry_sign: Error: Please enter valid coin amount.");
+					}
+				} else{
+					msg.channel.send(":no_entry_sign: Error: Please provide a user to take coins.");
+				}
 			} else{
 				msg.channel.send(":no_entry_sign: Error: Unknown command!");
 			}
