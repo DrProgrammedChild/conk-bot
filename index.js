@@ -3,15 +3,12 @@
 //Variables
 var discord = require("discord.js");
 var request = require("request");
-var express = require("express");
 var booru = require("booru");
-var bodyParser = require("body-parser");
 var dbjson = require("./database.json");
 var fs = require("fs");
 var ytdl = require("ytdl-core");
 var client = new discord.Client();
 var rule34 = new booru("rule34");
-var app = express();
 var prefix = process.env.prefix;
 var token = process.env.token;
 var playing = false;
@@ -440,14 +437,6 @@ client.on("message",msg => {
 	}
 });
 
-//Express routes
-var urlencodedParser = bodyParser.urlencoded({extended: false});
-app.use(express.static("client"));
-
-app.get("/",(req,res) => {
-	res.sendFile("./client/index.html");
-});
-
 //Daily coins
 setInterval(() => {
 	let guild = client.guilds.find("id","502609848102420510");
@@ -455,10 +444,6 @@ setInterval(() => {
 		addCoins(member,10);
 	});
 },1000*60*60*24);
-
-//Start server
-app.listen(process.env.PORT || 8081);
-console.log("Listening on port " + (process.env.PORT || 8081));
 
 //Login
 client.login(token);
