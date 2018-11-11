@@ -1,2 +1,2 @@
-web: node index
+web: node web
 worker: node index
