@@ -11,6 +11,7 @@ var client = new discord.Client();
 var rule34 = new booru("rule34");
 var prefix = process.env.prefix;
 var token = process.env.token;
+var dbpass = process.env.dbpass;
 var playing = false;
 var currentdispatcher;
 
@@ -83,45 +84,66 @@ function getHentai(tags){
 }
 
 function DBGetUser(user){
-	let dbentry = dbjson["id-" + user.id];
-	if(!dbentry){
-		dbentry = {
-			name: user.nickname,
-			id: user.id,
-			coins: 10
-		};
-		dbjson["id-" + user.id] = dbentry
-		fs.writeFile(
-			"./database.json",
-			JSON.stringify(dbjson),
-			console.log
-		);
-	}
-	return dbentry;
+	return new Promise((resolve,reject) => {
+		request({
+			url: "https://conk-database.herokuapp.com/db",
+			body: {
+				cmd: "getuser",
+				args: {
+					user: user
+				}
+			}
+		},(err,res,body) => {
+			resolve(JSON.parse(body));
+		});
+	});
 }
 
 function DBSetUser(user,newentry){
-	dbjson["id-" + user.id] = newentry;
-	fs.writeFile("./database.json",JSON.stringify(dbjson),console.log);
+	return new Promise((resolve,reject) => {
+		request({
+			url: "https://conk-database.herokuapp.com/db",
+			body: {
+				cmd: "setuser",
+				args: {
+					user: user,
+					newentry: newentry
+				}
+			}
+		},(err,res,body) => {
+			resolve(body);
+		});
+	});
 }
 
 function getCoins(user){
-	let dbentry = DBGetUser(user);
-	return dbentry.coins;
+	return new Promise((resolve,reject) => {
+		DBGetUser(user)
+			.then(dbentry => {
+				resolve(dbentry.coins);
+			})
+			.catch(console.log);
+	});
 }
 
 function addCoins(user,amount){
-	let dbentry = DBGetUser(user);
-	dbentry.coins += amount;
-	DBSetUser(user,dbentry);
+	DBGetUser(user)
+		.then(dbentry => {
+			dbentry.coins += amount;
+			DBSetUser(user,dbentry);
+		})
+		.catch(console.log);
 }
 
 function takeCoins(user,amount){
-	let dbentry = DBGetUser(user);
-	dbentry.coins -= amount;
-	if(dbentry.coins >= 0){
-		DBSetUser(user,dbentry);
-	}
+	DBGetUser(user)
+		.then(dbentry => {
+			dbentry.coins -= amount;
+			if(dbentry.coins >= 0){
+				DBSetUser(user,dbentry);
+			}
+		})
+		.catch(console.log);
 }
 
 //Events
@@ -131,10 +153,13 @@ client.on("ready",() => {
 });
 
 client.on("guildMemberAdd",member => {
-	DBGetUser(member);
-	let channel = member.guild.channels.find("name","general");
-	channel.send("Welcome, **" + member.user.username + "**. Enjoy the squeaking of all the squeakers in this server.");
-	member.addRole("502610628964384771");
+	DBGetUser("id-" + member.id)
+		.then(() => {
+			let channel = member.guild.channels.find("name","general");
+			channel.send("Welcome, **" + member.user.username + "**. Enjoy the squeaking of all the squeakers in this server.");
+			member.addRole("502610628964384771");
+		})
+		.catch(console.log);
 });
 
 client.on("guildMemberRemove",member => {
@@ -311,8 +336,11 @@ client.on("message",msg => {
 					})
 					.catch(console.log);
 			} else if(cmd == prefix + "coins"){
-				let coins = getCoins(msg.member)
-				msg.channel.send("You have **" + coins + "** squeaker coins.");
+				getCoins(msg.member)
+					.then(coins => {
+						msg.channel.send("You have **" + coins + "** squeaker coins.");
+					})
+					.catch(console.log);
 			} else if(cmd == prefix + "shop"){
 				msg.author.send({
 					embed: {
@@ -346,53 +374,56 @@ client.on("message",msg => {
 				});
 				msg.channel.send("DM'd you a list of buyable items");
 			} else if(cmd == prefix + "buy"){
-				let coins = getCoins(msg.member)
-				if(args[0]){
-					let shopitem = parseInt(args[0]);
-					if(shopitem){
-						if(shopitem == 1){
-							if(coins >= 200){
-								msg.member.addRole("505925160038170644");
-								takeCoins(msg.member,200);
-								msg.channel.send("Bought **Smol Squeaker** for **200** squeaker coins.");
-							} else{
-								msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
-							}
-						} else if(shopitem == 2){
-							if(coins >= 400){
-								msg.member.addRole("505925298802524181");
-								takeCoins(msg.member,400);
-								msg.channel.send("Bought **High-Pitched Squeaker** for **400** squeaker coins.");
-							} else{
-								msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
-							}
-						} else if(shopitem == 3){
-							if(coins >= 600){
-								msg.member.addRole("505925545465479182");
-								takeCoins(msg.member,600);
-								msg.channel.send("Bought **Hacker Squeaker** for **600** squeaker coins.");
-							} else{
-								msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
-							}
-						} else if(shopitem == 4){
-							if(coins >= 800){
-								msg.member.addRole("505925770770776064");
-								takeCoins(msg.member,800);
-								msg.channel.send("Bought **Yeet Squeaker** for **800** squeaker coins.");
-							} else{
-								msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
-							}
-						} else if(shopitem == 5){
-							if(coins >= 1000){
-								msg.member.addRole("505925919748390923");
-								takeCoins(msg.member,1000);
-								msg.channel.send("Bought **\"Your Mom\" Squeaker** for **1000** squeaker coins.");
-							} else{
-								msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+				getCoins(msg.member)
+					.then(coins => {
+						if(args[0]){
+							let shopitem = parseInt(args[0]);
+							if(shopitem){
+								if(shopitem == 1){
+									if(coins >= 200){
+										msg.member.addRole("505925160038170644");
+										takeCoins(msg.member,200);
+										msg.channel.send("Bought **Smol Squeaker** for **200** squeaker coins.");
+									} else{
+										msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+									}
+								} else if(shopitem == 2){
+									if(coins >= 400){
+										msg.member.addRole("505925298802524181");
+										takeCoins(msg.member,400);
+										msg.channel.send("Bought **High-Pitched Squeaker** for **400** squeaker coins.");
+									} else{
+										msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+									}
+								} else if(shopitem == 3){
+									if(coins >= 600){
+										msg.member.addRole("505925545465479182");
+										takeCoins(msg.member,600);
+										msg.channel.send("Bought **Hacker Squeaker** for **600** squeaker coins.");
+									} else{
+										msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+									}
+								} else if(shopitem == 4){
+									if(coins >= 800){
+										msg.member.addRole("505925770770776064");
+										takeCoins(msg.member,800);
+										msg.channel.send("Bought **Yeet Squeaker** for **800** squeaker coins.");
+									} else{
+										msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+									}
+								} else if(shopitem == 5){
+									if(coins >= 1000){
+										msg.member.addRole("505925919748390923");
+										takeCoins(msg.member,1000);
+										msg.channel.send("Bought **\"Your Mom\" Squeaker** for **1000** squeaker coins.");
+									} else{
+										msg.channel.send(":no_entry_sign: Error: You don't have enough money for that.");
+									}
+								}
 							}
 						}
-					}
-				}
+					})
+					.catch(console.log);
 			} else if(cmd == prefix + "invite"){
 				msg.channel.createInvite({maxAge: 0, unique: true})
 					.then(invite => {
