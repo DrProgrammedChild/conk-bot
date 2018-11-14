@@ -90,7 +90,8 @@ function DBGetUser(user){
 			body: {
 				cmd: "getuser",
 				args: {
-					user: user
+					user: user,
+					auth: dbpass
 				}
 			}
 		},(err,res,body) => {
@@ -107,7 +108,8 @@ function DBSetUser(user,newentry){
 				cmd: "setuser",
 				args: {
 					user: user,
-					newentry: newentry
+					newentry: newentry,
+					auth: dbpass
 				}
 			}
 		},(err,res,body) => {
